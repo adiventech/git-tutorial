@@ -25,7 +25,7 @@ jobs:
       - name: Run Ruby Script
         id: run_script
         run: |
-          output=$(bundle exec test_ruby.rb)
+          output=$(bundle exec ruby test_ruby.rb)
           echo "::set-output name=script_output::$output"
 
       - name: Post to Slack
