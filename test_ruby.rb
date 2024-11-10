@@ -1,8 +1,6 @@
 # script.rb
 require 'httparty'
 
-puts "Starting the Ruby script..."
-
 # Example of making a GET request to a public API
 response = HTTParty.get('https://api.github.com/repos/rails/rails')
 repo_data = response.parsed_response
