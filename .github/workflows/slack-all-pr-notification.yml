@@ -20,11 +20,10 @@ jobs:
           "https://api.github.com/repos/${{ github.repository }}/pulls?state=open&per_page=100")
 
           # Filter PRs that have the specific label
-          FILTERED_PRS=$(echo "$OPEN_PRS" | jq --arg LABEL "$LABEL" '[.[] | select(.labels[]? | .name == $LABEL)]')
+           FILTERED_PRS=$(echo "$OPEN_PRS" | jq --arg LABEL "$LABEL" '[.[] | select(.labels[]? | .name == $LABEL)]')
 
           # Save filtered PRs to a JSON file
           echo "$FILTERED_PRS" > filtered_prs.json
-
           # Count the number of filtered PRs
           PR_COUNT=$(echo "$FILTERED_PRS" | jq '. | length')
           echo "Total Open PRs with label '$LABEL': $PR_COUNT"
@@ -35,18 +34,15 @@ jobs:
 
             # Initialize an empty variable to store formatted details
             PR_DETAILS=""
-
-            # Loop through each filtered PR and append details to PR_DETAILS
-            echo "$FILTERED_PRS" | jq -c '.[]' | while read -r pr; do
+            while read -r pr; do
               TITLE=$(echo "$pr" | jq -r '.title')
               URL=$(echo "$pr" | jq -r '.html_url')
               AUTHOR=$(echo "$pr" | jq -r '.user.login')
               CREATED_AT=$(echo "$pr" | jq -r '.created_at')
-
-              # Append formatted string to PR_DETAILS
               PR_DETAILS+="*Title:* $TITLE\n*URL:* $URL\n*Author:* $AUTHOR\n*Created At:* $CREATED_AT\n\n"
-            done
-            echo "PR details : $PR_DETAILS"
+            done < <(echo "$FILTERED_PRS" | jq -c '.[]')
+
+            echo "Final details : $PR_DETAILS"
             MESSAGE+="$PR_DETAILS"
             echo "::set-output name=slack_message::$MESSAGE"
           else
